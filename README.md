@@ -11,7 +11,7 @@ Tunnelblick Companion is a small macOS menu bar app that watches Tunnelblick log
 
 ## Install (from GitHub Releases)
 
-1. Open this repository's **Releases** page.
+1. Open this repository's **Releases** page. https://github.com/Wartafak/TunneblickCompanion/releases/tag/0.0.1
 2. Download `Tunneblick.Companion.zip` from the latest release.
 3. Open your Downloads folder and extract the zip.
 4. Drag **Tunnelblick Companion.app** into your **Applications** folder.
