@@ -38,7 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        monitor.stop()
+        monitor?.stop()
     }
 
     // MARK: - Menu Bar Setup
@@ -81,20 +81,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 button.image = NSImage(systemSymbolName: "lock.shield", accessibilityDescription: "Monitoring")
                 button.image?.isTemplate = true
             case .authDetected:
-                button.image = NSImage(systemSymbolName: "lock.open.fill", accessibilityDescription: "Auth Required")
-                button.image?.isTemplate = false
                 button.image = tintedImage(named: "lock.open.fill", color: .systemOrange)
             case .waitingForAuth:
-                button.image = NSImage(systemSymbolName: "clock.fill", accessibilityDescription: "Waiting")
-                button.image?.isTemplate = false
                 button.image = tintedImage(named: "clock.fill", color: .systemYellow)
             case .authComplete:
-                button.image = NSImage(systemSymbolName: "lock.fill", accessibilityDescription: "Auth Complete")
-                button.image?.isTemplate = false
                 button.image = tintedImage(named: "lock.fill", color: .systemGreen)
             case .error(let msg):
-                button.image = NSImage(systemSymbolName: "exclamationmark.triangle.fill", accessibilityDescription: "Error")
-                button.image?.isTemplate = false
                 button.image = tintedImage(named: "exclamationmark.triangle.fill", color: .systemRed)
                 statusMenuItem?.title = "Error: \(msg)"
                 return
@@ -107,32 +99,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Helper to tint SF Symbols
     func tintedImage(named: String, color: NSColor) -> NSImage? {
         guard let image = NSImage(systemSymbolName: named, accessibilityDescription: nil) else { return nil }
-        let tinted = image.copy() as! NSImage
-        tinted.lockFocus()
-        color.set()
-        NSRect(origin: .zero, size: tinted.size).fill(using: .sourceAtop)
-        tinted.unlockFocus()
+        let tinted = NSImage(size: image.size, flipped: false) { rect in
+            image.draw(in: rect)
+            color.set()
+            rect.fill(using: .sourceAtop)
+            return true
+        }
         tinted.isTemplate = false
         return tinted
     }
-    
-    func requestSystemEventsPermission() {
-        let script = NSAppleScript(source: """
-                tell application "System Events"
-                    return name of first process
-                end tell
-            """)
-            
-            var error: NSDictionary?
-            let result = script?.executeAndReturnError(&error)
-            
-            if let error = error {
-                print("Error: \(error)")
-            } else {
-                print("Success: \(result?.stringValue ?? "")")
-            }
-    }
-    
     
     // MARK: - Permission Checking
 
